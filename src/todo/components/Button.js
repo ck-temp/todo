@@ -2,39 +2,62 @@ import React from 'react';
 import * as Fa from 'react-icons/fa';
 import styled from 'styled-components';
 
-const Button = styled.button`
+const ButtonContainer = styled.button`
   background: ${props => props.bg ? props.bg : "#0069D9"};
   color: ${props => props.color ? props.color : "white"};
   font-size: 1em;
-  margin: 1em;
+  margin: ${props => props.margin ? props.margin : '1em'};
   padding: 0.25em 1em;
   border: 2px solid ${props => props.bg ? props.bg : "#0069D9"};
-  border-radius: 3px;
-  width: ${props => props.block ? '98%' : ""};
+  border-radius: ${props => props.borderRadius ? props.borderRadius : "3px"};
+  width: ${props => props.block ? '100%' : "fit-content"};
   cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    filter: brightness(1.2);
+  }
+
+  &.left {
+    flex-direction: row;
+  }
+
+  &.right {
+    flex-direction: row-reverse;
+  }
+
+  &.top {
+    flex-direction: column;
+  }
+
+  &.bottom {
+    flex-direction: column-reverse;
+  }
 `;
 
-const LargeButton = styled(Button)`
+const LargeButtonContainer = styled(ButtonContainer)`
     font-size : 1.5em;
 `;
 
-const SmallButon = styled(Button)`
+const SmallButtonContainer = styled(ButtonContainer)`
     font-size : 0.7em;
 `;
 
 const Spinner = () => (
-    <StyledSpinner viewBox="0 0 50 50">
-      <circle
-        className="path"
-        cx="25"
-        cy="25"
-        r="20"
-        fill="none"
-        strokeWidth="2"
-      />
-    </StyledSpinner>
-  );
-  
+  <StyledSpinner viewBox="0 0 50 50">
+    <circle
+      className="path"
+      cx="25"
+      cy="25"
+      r="20"
+      fill="none"
+      strokeWidth="2"
+    />
+  </StyledSpinner>
+);
+
 const StyledSpinner = styled.svg`
     animation: rotate 1s linear infinite;
     width: 20px;
@@ -67,33 +90,28 @@ const StyledSpinner = styled.svg`
     }
   `;
 
-export default ({icon, bg, color, children, size, iconPosition, action, block, isLoading, handleClick}) => {
-    const Icon = Fa[icon];
-    let iconStyle = {};
-    
-    if(iconPosition === "left") {
-        iconStyle = {display: 'flex', flexDirection: 'row', alignItems: 'center'}
-    } else if(iconPosition === "right") {
-        iconStyle = {display: 'flex', flexDirection: 'row-reverse', alignItems: 'center'}
-    } else if(iconPosition === "top") {
-        iconStyle = {display: 'flex', flexDirection: 'column', alignItems: 'center'}
-    } else {
-        iconStyle = {display: 'flex', flexDirection: 'column-reverse', alignItems: 'center'}
-    }
-    console.log(handleClick)
-    let RenderButton =  (<Button style={iconStyle} bg = {bg} color = {color} block = {block} onClick = {handleClick}>
-                            {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
-                        </Button>);
-    if(size === "lg") {
-        RenderButton = (<LargeButton style={iconStyle} bg = {bg} color = {color} block = {block} onClick = {handleClick}>
-                            {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
-                        </LargeButton>)
-    } else if (size === "sm") {
-        RenderButton = (<SmallButon style={iconStyle} bg = {bg} color = {color} block = {block} handleClick = {handleClick}>
-                            {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
-                        </SmallButon>)
-    }
+const Button = ({ icon, bg, color, children, size, iconPosition, action, block, isLoading, onClick, margin }) => {
+  const Icon = Fa[icon];
 
-    return(RenderButton);
+  let RenderButtonContainer = (
+    <ButtonContainer className={iconPosition} bg={bg} color={color} block={block} onClick={onClick} margin={margin}>
+      {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
+    </ButtonContainer>
+  );
+  if (size === "lg") {
+    RenderButtonContainer = (
+      <LargeButtonContainer className={iconPosition} bg={bg} color={color} block={block} onClick={onClick} margin={margin}>
+        {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
+      </LargeButtonContainer>
+    );
+  } else if (size === "sm") {
+    RenderButtonContainer = (
+      <SmallButtonContainer className={iconPosition} bg={bg} color={color} block={block} handleClick={onClick} margin={margin}>
+        {isLoading ? action === 'text' ? 'Loading...' : <Spinner /> : Icon ? <><Icon />{children}</> : children}
+      </SmallButtonContainer>
+    );
+  }
+  return (RenderButtonContainer);
 };
 
+export default Button;
